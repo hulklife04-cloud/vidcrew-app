@@ -200,104 +200,70 @@ select.inp{cursor:pointer;-webkit-appearance:none;}
 var editorStatus='online';
 var selTipAmt=0;
 var ORDERS=[
-  {id:'VC-001',title:'iPhone 15 Pro Review',type:'YouTube Tutorial',plan:'Premium 5-15min',price:2499,status:'progress',progress:60,editor:'Vansh Kumar',mood:'Cinematic',notes:'Fast cuts, dynamic text, keep under 10 min',drive:'drive.google.com/...'},
-  {id:'VC-002',title:'Brand Ad - Nike Style',type:'Meta Ad',plan:'Premium Under 1min',price:799,status:'review',progress:85,editor:'Jayanth Patel',mood:'Energetic',notes:'Strong hook in first 3 seconds'},
-  {id:'VC-003',title:'Daily Vlog 42',type:'YouTube',plan:'Premium 1-5min',price:1499,status:'done',progress:100,editor:'Aniket Thete',mood:'Warm',notes:''}
+    {id:'VC-001',title:'iPhone 15 Pro Review',type:'YouTube Tutorial',plan:'Premium 5-15min',price:2499,status:'progress',progress:60,editor:'Vansh Kumar'},
+    {id:'VC-002',title:'Brand Ad - Nike Style',type:'Meta Ad',plan:'Premium Under 1min',price:799,status:'review',progress:90,editor:'Vansh Kumar'},
+    {id:'VC-003',title:'Daily Vlog 42',type:'YouTube',plan:'Premium 1-5min',price:1499,status:'done',progress:100,editor:'Vansh Kumar'}
 ];
 var EDITORS=[
-  {nm:'Vansh Kumar',role:'Motion Graphics',status:'online',jobs:2},
-  {nm:'Yashi Singh',role:'AI Documentary',status:'busy',jobs:1},
-  {nm:'Jayanth Patel',role:'Suspense Doc',status:'online',jobs:1},
-  {nm:'Aniket Thete',role:'Web Dev + Editor',status:'offline',jobs:0}
+    {nm:'Vansh Kumar',role:'Motion Graphics',status:'online',jobs:2},
+    {nm:'Yashi Singh',role:'AI Documentary',status:'busy',jobs:1},
+    {nm:'Jayanth Patel',role:'Suspense Doc',status:'online',jobs:1},
+    {nm:'Aniket Thete',role:'Web Dev + Editor',status:'offline',jobs:0}
 ];
 var MSGS=[
-  {from:'Vansh Kumar',text:'Working on your project now! Looking great',time:'2:15 PM',out:false},
-  {from:'Me',text:'Can you add a red glow on the title?',time:'2:18 PM',out:true},
-  {from:'Vansh Kumar',text:'Yes! Will do in next revision',time:'2:20 PM',out:false}
+    {from:'Vansh Kumar',text:'Working on your project now! Looking great',time:'2:15 PM',out:false},
+    {from:'Me',text:'Can you add a red glow on the title?',time:'2:18 PM',out:true},
+    {from:'Vansh Kumar',text:'Yes! Will do in next revision',time:'2:20 PM',out:false}
 ];
 var chatLog=[...MSGS];
 
-function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 function showModal(h){document.getElementById('modal-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
 function loginSubmit(){var v=document.getElementById('login-inp').value.trim();if(!v){toast('Enter code or email');return;}demoLogin(v.includes('editor')?'editor':v.includes('admin')?'admin':'client');}
 
-
-    
-function logout(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('login-screen').classList.add('active');}
-
-function setActive(navId,btn){document.querySelectorAll('#'+navId+' .bn-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
-
-function clientTab(tab,btn){setActive('client-nav',btn);var c=document.getElementById('client-content');
-  if(tab==='orders'){
-    c.innerHTML='<div class="sec-head">MY ORDERS</div><div class="sec-sub">Track projects in real time.</div>'+ORDERS.map(o=>'<div class="order-card"><div class="oc-top"><div><div class="oc-title">'+o.title+'</div><div class="oc-type">'+o.type+' · '+o.id+'</div></div><span class="badge badge-'+o.status+'">'+{progress:'In Progress',review:'Under Review',done:'Delivered',pending:'Pending'}[o.status]+'</span></div><div class="progress-wrap"><div class="progress-bar" style="width:'+o.progress+'%"></div></div><div class="progress-steps"><span class="ps '+(o.progress>=100?'done':o.progress>=1?'done':'')+'">Submitted</span><span class="ps '+(o.progress>=40?'done':o.progress>=20?'active':'')+'">Editing</span><span class="ps '+(o.progress>=100?'done':o.progress>=80?'active':'')+'">Review</span><span class="ps '+(o.progress>=100?'done':'')+'">Done</span></div><div style="font-size:12px;color:var(--muted2);margin-top:8px;">Editor: '+o.editor+' · Mood: '+o.mood+'</div><div class="oc-actions"><button class="sm-btn sm-btn-red" onclick="joinLive(''+o.id+'')">Live</button><button class="sm-btn sm-btn-ghost" onclick="clientTab('chat',null)">Chat</button>'+(o.status==='done'?'<button class="sm-btn sm-btn-gold" onclick="showTip()">Tip</button>':'')+'</div></div>').join('');}
-  else if(tab==='chat'){
-    c.style.cssText='';c.innerHTML='';
-    c.style.display='flex';c.style.flexDirection='column';c.style.height='calc(100vh - 112px)';c.style.padding='0';
-    c.innerHTML='<div style="padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;"><b>Chat</b> · Vansh Kumar · <span style="color:var(--green);font-size:12px;">Online</span></div><div class="chat-msgs" id="cml">'+chatLog.map(m=>'<div class="msg '+(m.out?'msg-out':'msg-in')+'">'+(m.out?'':('<div class="msg-sender">'+m.from+'</div>'))+m.text+'<div class="msg-time">'+m.time+'</div></div>').join('')+'</div><div class="chat-input-wrap"><input class="chat-inp" id="ci" placeholder="Message..." onkeydown="if(event.key==='Enter')sendMsg()"/><button class="send-btn" onclick="sendMsg()">↑</button></div>';
-    setTimeout(()=>{var el=document.getElementById('cml');if(el)el.scrollTop=el.scrollHeight;},100);}
-  else if(tab==='loyalty'){c.innerHTML='<div class="sec-head">LOYALTY</div><div class="sec-sub">5 orders = 1 FREE edit worth 1,499!</div><div class="loyalty-card"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b>Progress</b><b style="color:var(--gold);">3/5</b></div><div class="loyalty-progress"><div class="lp-dot filled"></div><div class="lp-dot filled"></div><div class="lp-dot filled"></div><div class="lp-dot empty"></div><div class="lp-dot empty"></div></div><div style="font-size:12px;color:var(--muted2);">2 more orders for FREE edit!</div></div><div class="card"><div class="card-title">Badges</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><span class="user-badge" style="background:rgba(46,204,113,0.1);color:var(--green);border:1px solid rgba(46,204,113,0.2);">Regular Member</span><span class="user-badge" style="background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.2);">Loyal Client</span></div></div>';}
-  else if(tab==='profile'){c.innerHTML='<div class="profile-header"><div class="profile-av" style="background:linear-gradient(135deg,var(--red),#8B0000);">T</div><div class="profile-nm">TechWithRamesh</div><div class="profile-role">Verified Client</div></div><div class="card"><div style="font-size:13px;color:var(--muted2);display:flex;flex-direction:column;gap:8px;"><div>Email: techwithramesh@gmail.com</div><div>Orders: 3</div><div>Total Spent: 4,797</div></div></div><button class="btn btn-ghost" onclick="logout()">Logout</button>';}
-}
-
-function joinLive(id){showModal('<div style="font-size:20px;font-weight:900;margin-bottom:12px;">Live Session</div><div style="font-size:13px;color:var(--muted2);margin-bottom:16px;">Watch your editor work in real time</div><button class="btn btn-red" onclick="window.open('https://hulklife04-cloud.github.io/vidcrew-meet/','_blank');closeModal()">Open Vidcrew Meet</button><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>');}
-function showTip(){selTipAmt=0;showModal('<div style="font-size:20px;font-weight:900;margin-bottom:8px;">Tip Your Editor</div><div style="font-size:13px;color:var(--muted2);margin-bottom:12px;">100% goes to your editor directly.</div><div class="tip-amounts" id="tip-row">'+[20,50,100,200].map(a=>'<div class="tip-opt" onclick="pickTip('+a+',this)">'+a+'</div>').join('')+'</div><input class="inp" id="tc" type="number" placeholder="Custom amount"/><button class="btn btn-gold" onclick="doTip()">Send Tip</button><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>');}
-function pickTip(a,el){selTipAmt=a;document.querySelectorAll('.tip-opt').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');}
-
 function demoLogin(role){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     if(role==='client'){document.getElementById('client-screen').classList.add('active');}
     else if(role==='editor'){document.getElementById('editor-screen').classList.add('active');}
     else{document.getElementById('admin-screen').classList.add('active');}
-  }
-    
+}
 
-function doTip(){var c=document.getElementById('tc'),a=selTipAmt||(c&&parseInt(c.value))||0;if(!a){toast('Pick or enter amount');return;}closeModal();toast('Tip sent! Editor will love it!');}
-function sendMsg(){var i=document.getElementById('ci');if(!i)return;var t=i.value.trim();if(!t)return;i.value='';chatLog.push({from:'Me',text:t,time:'now',out:true});clientTab('chat',null);setTimeout(()=>{chatLog.push({from:'Vansh Kumar',text:'Got it! On it now',time:'now',out:false});clientTab('chat',null);},1500);}
+function logout(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('login-screen').classList.add('active');}
+
+function setActive(navId,btn){document.querySelectorAll('#'+navId+' .bn-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
+
+function clientTab(tab,btn){setActive('client-nav',btn);var c=document.getElementById('client-content');
+    if(tab==='orders'){c.innerHTML='<div class="sec-head">MY ORDERS</div><div class="sec-sub">Track projects in real time.</div>'+ORDERS.map(o=>`<div class="card" onclick="showBrief(${o.id.replace('VC-','')})"><div class="card-title">${o.title}</div><div class="sec-sub">${o.type} · ${o.plan}</div><div class="progress-wrap"><div class="progress-bar" style="width:${o.progress}%"></div></div><div class="oc-top"><span class="oc-title">${o.status.toUpperCase()}</span><span class="oc-type">${o.editor}</span></div></div>`).join('');}
+    else if(tab==='chat'){c.style.cssText='';c.innerHTML='';c.style.display='flex';c.style.flexDirection='column';c.style.height='calc(100vh - 112px)';c.style.padding='0';c.innerHTML='<div style="padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;"><b>Chat</b> · Vansh Kumar</div><div id="cml" style="flex:1;overflow-y:auto;padding:12px;">'+chatLog.map(m=>`<div class="${m.out?'msg-out':'msg-in'}"><div class="msg-sender">${m.from}</div>${m.text}<div class="msg-time">${m.time}</div></div>`).join('')+'</div><div class="chat-input-wrap"><input class="chat-inp" id="ci" placeholder="Message..."><button class="send-btn" onclick="sendMsg()">➤</button></div>';setTimeout(()=>{var el=document.getElementById('cml');if(el)el.scrollTop=el.scrollHeight;},100);}
+    else if(tab==='loyalty'){c.innerHTML='<div class="sec-head">LOYALTY</div><div class="sec-sub">5 orders = 1 FREE edit</div><div class="loyalty-card"><div class="loyalty-progress" style="width:60%"></div></div><div class="lp-dot lp-dot.filled"></div><div class="lp-dot lp-dot.filled"></div><div class="lp-dot lp-dot.filled"></div><div class="lp-dot"></div><div class="lp-dot"></div><div style="margin-top:8px;font-size:13px;color:var(--muted)">3 of 5 completed</div>';}
+    else if(tab==='profile'){c.innerHTML='<div class="profile-header"><div class="profile-av" style="background:linear-gradient(135deg,var(--red),var(--gold))">TC</div><div class="profile-nm">TechWithRamesh</div><div class="profile-role">Client</div></div><div class="card"><div class="user-badge"><span>⭐</span> Regular Client</div></div><div class="card" style="margin-top:8px"><div style="font-size:13px;color:var(--muted)">Client Code</div><div style="font-size:16px;font-weight:700">VC-2026-0047</div></div>';}
+}
+
+function joinLive(id){showModal('<div style="font-size:20px;font-weight:900;margin-bottom:12px;">Live Session</div><div style="font-size:15px;color:var(--muted)">Connecting to editor screen...</div><div style="margin-top:16px;padding:20px;background:var(--bg);border-radius:12px;text-align:center;font-size:13px;color:var(--muted)">🔴 LIVE · Editor is working on your project</div><button class="btn btn-red" style="margin-top:16px;width:100%" onclick="closeModal()">Leave</button>');}
+function showTip(){selTipAmt=0;showModal('<div style="font-size:20px;font-weight:900;margin-bottom:8px;">Tip Your Editor</div><div style="font-size:14px;color:var(--muted);margin-bottom:16px;">Show appreciation for great work</div><div class="tip-amounts" style="display:flex;gap:8px;margin:12px 0;"><button class="tip-opt" onclick="pickTip(50,this)">₹50</button><button class="tip-opt" onclick="pickTip(100,this)">₹100</button><button class="tip-opt" onclick="pickTip(200,this)">₹200</button><button class="tip-opt" onclick="pickTip(500,this)">₹500</button></div><button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="doTip()">Send Tip</button>');}
+function pickTip(a,el){selTipAmt=a;document.querySelectorAll('.tip-opt').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');}
+function doTip(){var c=document.getElementById('tc'),a=selTipAmt||(c&&parseInt(c.value))||0;if(!a){toast('Pick or enter amount');return;}closeModal();toast('Tip of ₹'+a+' sent!');}
+function sendMsg(){var i=document.getElementById('ci');if(!i)return;var t=i.value.trim();if(!t)return;i.value='';chatLog.push({from:'Me',text:t,time:'now',out:true});var el=document.getElementById('cml');if(el){el.innerHTML=chatLog.map(m=>`<div class="${m.out?'msg-out':'msg-in'}"><div class="msg-sender">${m.from}</div>${m.text}<div class="msg-time">${m.time}</div></div>`).join('');el.scrollTop=el.scrollHeight;}}
 
 function editorTab(tab,btn){setActive('editor-nav',btn);var c=document.getElementById('editor-content');
-  if(tab==='jobs'){
-    var myJobs=ORDERS.filter(o=>o.editor==='Vansh Kumar');
-    c.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div class="sec-head">MY JOBS</div></div><div style="display:flex;gap:6px;margin-bottom:12px;">'+['online','busy','offline'].map(s=>'<button onclick="setEdStatus(''+s+'')" style="padding:6px 12px;border-radius:100px;font-size:11px;font-weight:700;border:1.5px solid '+(editorStatus===s?'var(--red)':'var(--border)')+';background:transparent;color:'+(editorStatus===s?'var(--red)':'var(--muted2)')+';cursor:pointer;font-family:var(--font);">'+(s==='online'?'Online':s==='busy'?'Busy':'Offline')+'</button>').join('')+'</div>'+myJobs.map(o=>'<div class="job-card"><div class="jc-top"><div class="jc-nm">'+o.title+'</div><div class="jc-price">'+Math.round(o.price*0.6).toLocaleString('en-IN')+'</div></div><div class="jc-meta">'+o.type+' · '+o.mood+'</div><div class="jc-brief"><div class="jc-brief-title">Brief</div><div class="jc-brief-text">'+(o.notes||'No notes')+'</div></div><div class="oc-actions"><button class="sm-btn sm-btn-red" onclick="window.open('https://hulklife04-cloud.github.io/vidcrew-meet/','_blank')">Live</button><button class="sm-btn sm-btn-blue" onclick="toast('Status updated!')">Update</button><button class="sm-btn sm-btn-green" onclick="toast('Marked done!')">Done</button></div></div>').join('');
-  }
-  else if(tab==='tools'){
-    var tools=[
-      {ic:'2702',nm:'Silence Detector',ds:'Find silent gaps',col:'rgba(230,59,46,0.1)',r:'Gaps found: 00:12-00:15 (3s), 01:23-01:28 (5s), 03:10-03:18 (8s) → All removable'},
-      {ic:'1F3A4',nm:'Auto Captions',ds:'Timed captions from script',col:'rgba(59,130,246,0.1)',r:'[0:00] Welcome back! [0:03] Today reviewing iPhone 15 Pro [0:07] This is incredible...'},
-      {ic:'1F3B5',nm:'Music Mood Matcher',ds:'Best tracks for your mood',col:'rgba(201,168,76,0.1)',r:'1. Epic Rise BPM:128 | 2. Cinematic Tension BPM:85 | 3. Grand Horizon BPM:95'},
-      {ic:'1F5BC',nm:'Thumbnail Concepts',ds:'5 AI thumbnail ideas',col:'rgba(46,204,113,0.1)',r:'1. Red bg + product closeup | 2. Dark gradient + face reaction | 3. Split before/after | 4. Minimal white | 5. Cinematic blur'},
-      {ic:'1F4DD',nm:'Script Cut Analyser',ds:'What to cut, keep, trim',col:'rgba(139,92,246,0.1)',r:'[HOOK] Keep ✅ | [0:05] Long intro → TRIM | [0:30] Um so basically → CUT ❌ | [1:00] Main content → Keep ✅'},
-      {ic:'1F50D',nm:'QC Analyser',ds:'Score before delivery',col:'rgba(230,59,46,0.1)',r:'Score: 87/100 | Hook:9/10 | Pacing:8/10 | Music:7/10 (slightly loud at 2:30) | CTA:6/10 → Strengthen end screen'},
-      {ic:'1F3A8',nm:'HSL Colour Suggester',ds:'Exact HSL for your mood',col:'rgba(59,130,246,0.1)',r:'Highlights: H+8 S-10 L+15 | Midtones: H+12 S+5 | Shadows: H+20 S+10 L-8 | Orange: S+25 | Blue: S-20'}
-    ];
-    c.innerHTML='<div class="sec-head">AI TOOLS</div><div class="sec-sub">7 tools to edit faster.</div>'+tools.map(t=>'<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-ic" style="background:'+t.col+';">'+String.fromCodePoint(parseInt(t.ic,16))+'</div><div><div class="ai-tool-nm">'+t.nm+'</div><div class="ai-tool-ds">'+t.ds+'</div></div></div><button class="sm-btn sm-btn-red" style="width:100%;" onclick="runTool(this,''+t.nm+'',''+t.r+'')">Run Tool</button><div class="ai-result" style="display:none;"></div></div>').join('');
-  }
-  else if(tab==='earnings'){
-    var total=ORDERS.filter(o=>o.editor==='Vansh Kumar').reduce((s,o)=>s+Math.round(o.price*0.6),0);
-    c.innerHTML='<div class="sec-head">EARNINGS</div><div class="sec-sub">60% of every project is yours.</div><div class="revenue-card"><div class="rev-amount">'+total.toLocaleString('en-IN')+'</div><div class="rev-label">Total This Month</div></div>'+ORDERS.filter(o=>o.editor==='Vansh Kumar').map(o=>'<div class="earn-card"><div><div class="earn-nm">'+o.title+'</div><div class="earn-dt">'+o.type+'</div></div><div class="earn-pr">'+Math.round(o.price*0.6).toLocaleString('en-IN')+'</div></div>').join('')+'<div class="card" style="font-size:13px;color:var(--muted2);display:flex;flex-direction:column;gap:6px;"><div>Your cut: 60%</div><div>Tips: 100% yours</div></div>';
-  }
-  else if(tab==='profile'){c.innerHTML='<div class="profile-header"><div class="profile-av" style="background:linear-gradient(135deg,var(--gold),#7a5c1e);">V</div><div class="profile-nm">Vansh Kumar</div><div class="profile-role">Motion Graphics Editor</div></div><div class="card"><div style="font-size:13px;color:var(--muted2);display:flex;flex-direction:column;gap:8px;"><div>Speciality: Motion Graphics</div><div>Active Jobs: 2</div><div>Rating: 4.9/5</div></div></div><button class="btn btn-ghost" onclick="logout()">Logout</button>';}
+    if(tab==='jobs'){var myJobs=ORDERS.filter(o=>o.editor==='Vansh Kumar');c.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div class="sec-head">MY JOBS</div></div>'+myJobs.map(o=>`<div class="card"><div class="card-title">${o.title}</div><div class="sec-sub">${o.type}</div><div class="editor-row"><div class="er-left"><div class="er-av">VK</div><div><div class="er-nm">Vansh Kumar</div><div class="er-mm">Motion Graphics</div></div></div><button class="sm-btn sm-btn-green" onclick="toast('Marked complete!')">Done</button></div></div>`).join('');}
+    else if(tab==='tools'){var tools=[{ic:'2702',nm:'Silence Detector',ds:'Find silent gaps',col:'rgba(230,59,46,0.1)',r:'Gaps found: 00:12-00:15 (3s), 00:45-00:52'},{ic:'1F3A4',nm:'Auto Captions',ds:'Timed captions from script',col:'rgba(59,130,246,0.1)',r:'[0:00] Welcome back!'},{ic:'1F3B5',nm:'Music Mood Matcher',ds:'Best tracks for your mood',col:'rgba(201,168,76,0.1)',r:'1. Epic Rise BPM:128'},{ic:'1F5BC',nm:'Thumbnail Concepts',ds:'5 AI thumbnail ideas',col:'rgba(46,204,113,0.1)',r:'1. Red bg + product close-up'},{ic:'1F4DD',nm:'Script Cut Analyser',ds:'What to cut, keep, trim',col:'rgba(139,92,246,0.1)',r:'[HOOK] Keep ✅'},{ic:'1F50D',nm:'QC Analyser',ds:'Score before delivery',col:'rgba(230,59,46,0.1)',r:'Score: 87/100'},{ic:'1F3A8',nm:'HSL Colour Suggester',ds:'Exact HSL for your mood',col:'rgba(59,130,246,0.1)',r:'Highlights: H+8'}];c.innerHTML='<div class="sec-head">AI TOOLS</div><div class="sec-sub">7 tools to edit faster.</div>'+tools.map(t=>`<div class="ai-tool-ic" style="background:${t.col}" onclick="runTool(this,'${t.r}')"><div style="font-size:22px">&#x${t.ic};</div><div class="ai-tool-header">${t.nm}</div><div class="ai-tool-nm">${t.ds}</div><div class="ai-result" style="display:none"></div></div>`).join('');}
+    else if(tab==='earnings'){var total=ORDERS.reduce((s,o)=>s+Math.round(o.price*0.6),0);c.innerHTML='<div class="sec-head">EARNINGS</div><div class="sec-sub">60% of every project is yours.</div><div class="earn-card"><div class="earn-dt">This Month</div><div class="earn-pr">₹'+total+'</div></div>';}
+    else if(tab==='profile'){c.innerHTML='<div class="profile-header"><div class="profile-av" style="background:linear-gradient(135deg,var(--gold),#f59e0b)">VK</div><div class="profile-nm">Vansh Kumar</div><div class="profile-role" style="color:var(--red)">Motion Graphics Editor</div></div>';}
 }
-function setEdStatus(s){editorStatus=s;var d=document.getElementById('editor-sdot');d.className='status-dot '+(s==='online'?'s-online':s==='busy'?'s-busy':'s-offline');editorTab('jobs',null);}
-function runTool(btn,nm,r){var card=btn.parentElement;var res=card.querySelector('.ai-result');btn.textContent='Analysing...';btn.disabled=true;setTimeout(()=>{btn.textContent='Done - Run Again';btn.disabled=false;res.style.display='block';res.innerHTML='<div class="ai-result-title">'+nm+' Result</div>'+r;toast(nm+' complete!');},1800);}
+
+function setEdStatus(s){editorStatus=s;var d=document.getElementById('editor-sdot');d.className='status-dot '+(s==='online'?'s-online':s==='busy'?'s-busy':'s-offline');}
+function runTool(btn,nm,r){var card=btn.parentElement;var res=card.querySelector('.ai-result');btn.textContent='Analysing...';setTimeout(()=>{btn.textContent=nm;res.style.display='block';res.textContent=r;},1500);}
 
 function adminTab(tab,btn){setActive('admin-nav',btn);var c=document.getElementById('admin-content');
-  if(tab==='orders'){
-    var total=ORDERS.reduce((s,o)=>s+o.price,0);
-    c.innerHTML='<div class="sec-head">ALL ORDERS</div><div class="stats-grid" style="margin-bottom:16px;"><div class="stat-card"><div class="stat-n" style="color:var(--green);">'+total.toLocaleString('en-IN')+'</div><div class="stat-l">Revenue</div></div><div class="stat-card"><div class="stat-n" style="color:var(--blue);">'+ORDERS.filter(o=>o.status==='progress').length+'</div><div class="stat-l">Active</div></div><div class="stat-card"><div class="stat-n" style="color:var(--gold);">'+ORDERS.filter(o=>o.status==='review').length+'</div><div class="stat-l">Review</div></div><div class="stat-card"><div class="stat-n" style="color:var(--green);">'+ORDERS.filter(o=>o.status==='done').length+'</div><div class="stat-l">Delivered</div></div></div>'+ORDERS.map(o=>'<div class="admin-order"><div class="ao-top"><div><div class="ao-nm">'+o.title+'</div><div style="font-size:11px;color:var(--muted2);">'+o.id+' · '+o.price.toLocaleString('en-IN')+'</div></div><span class="badge badge-'+o.status+'">'+{progress:'Active',review:'Review',done:'Done',pending:'Pending'}[o.status]+'</span></div><div style="display:flex;gap:8px;margin-top:8px;"><select class="ao-select"><option>'+o.editor+' (assigned)</option>'+EDITORS.filter(e=>e.nm!==o.editor).map(e=>'<option>'+e.nm+'</option>').join('')+'</select><button class="sm-btn sm-btn-red" style="max-width:80px;" onclick="toast('Assigned!')">Assign</button></div><div class="oc-actions"><button class="sm-btn sm-btn-blue" onclick="showBrief(''+o.id+'')">AI Brief</button><button class="sm-btn sm-btn-ghost" onclick="window.open('https://hulklife04-cloud.github.io/vidcrew-meet/','_blank')">Live</button></div></div>').join('');
-  }
-  else if(tab==='team'){
-    c.innerHTML='<div class="sec-head">TEAM</div><div class="card"><div class="card-title">Editors</div>'+EDITORS.map(e=>'<div class="editor-row"><div class="er-left"><div class="er-av">'+e.nm[0]+'</div><div><div class="er-nm">'+e.nm+'</div><div class="er-role">'+e.role+' · '+e.jobs+' jobs</div></div></div><span style="font-size:11px;font-weight:700;color:'+(e.status==='online'?'var(--green)':e.status==='busy'?'var(--gold)':'var(--muted)')+';">'+e.status+'</span></div>').join('')+'</div><div class="card"><div class="card-title">Founders</div><div class="editor-row"><div class="er-left"><div class="er-av" style="background:linear-gradient(135deg,var(--red),#8B0000);color:#fff;">R</div><div><div class="er-nm">Romit Dutta</div><div class="er-role">Co-Founder & CEO</div></div></div></div><div class="editor-row"><div class="er-left"><div class="er-av" style="background:linear-gradient(135deg,var(--gold),#7a5c1e);color:#fff;">S</div><div><div class="er-nm">Shubh Prajapati</div><div class="er-role">Co-Founder & Script Writer</div></div></div></div></div>';
-  }
-  else if(tab==='revenue'){
-    var t=ORDERS.reduce((s,o)=>s+o.price,0);
-    c.innerHTML='<div class="sec-head">REVENUE</div><div class="revenue-card"><div class="rev-amount">'+t.toLocaleString('en-IN')+'</div><div class="rev-label">Total March 2026</div></div><div class="stats-grid"><div class="stat-card"><div class="stat-n" style="color:var(--red);">'+Math.round(t*0.4).toLocaleString('en-IN')+'</div><div class="stat-l">Vidcrew (40%)</div></div><div class="stat-card"><div class="stat-n" style="color:var(--green);">'+Math.round(t*0.6).toLocaleString('en-IN')+'</div><div class="stat-l">Editors (60%)</div></div></div>'+ORDERS.map(o=>'<div class="earn-card"><div><div class="earn-nm">'+o.title+'</div><div class="earn-dt">'+o.editor+'</div></div><div class="earn-pr">'+o.price.toLocaleString('en-IN')+'</div></div>').join('');
-  }
-  else if(tab==='settings'){
-    c.innerHTML='<div class="sec-head">SETTINGS</div><div class="card" style="font-size:13px;color:var(--muted2);display:flex;flex-direction:column;gap:10px;"><div>WhatsApp: +91 92110 25509</div><div>Email: vidcrew2026@gmail.com</div><div>Firebase: Connected</div><div>Plan: Spark (Free)</div><div>Region: Mumbai</div></div><button class="btn btn-ghost" onclick="logout()">Logout</button>';
-  }
+    if(tab==='orders'){var total=ORDERS.reduce((s,o)=>s+o.price,0);c.innerHTML='<div class="sec-head">ALL ORDERS</div><div class="stats-grid" style="margin-bottom:16px;"><div class="stat-n">'+ORDERS.length+'</div><div class="stat-1">Total Orders</div><div class="stat-n">₹'+total+'</div><div class="stat-1">Revenue</div></div>'+ORDERS.map(o=>`<div class="admin-order card"><div class="ao-top"><span class="ao-title">${o.id}</span><span class="oc-type badge-pending">${o.status}</span></div><div class="card-title">${o.title}</div><div class="sec-sub">₹${o.price} · ${o.editor}</div></div>`).join('');}
+    else if(tab==='team'){c.innerHTML='<div class="sec-head">TEAM</div><div class="card"><div class="card-title">Editors</div>'+EDITORS.map(e=>`<div class="editor-row"><div class="er-left"><div class="er-av">${e.nm.split(' ').map(n=>n[0]).join('')}</div><div><div class="er-nm">${e.nm}</div><div class="er-mm">${e.role}</div></div></div><span class="status-dot ${e.status==='online'?'s-online':e.status==='busy'?'s-busy':'s-offline'}"></span></div>`).join('')+'</div>';}
+    else if(tab==='revenue'){var t=ORDERS.reduce((s,o)=>s+o.price,0);c.innerHTML='<div class="sec-head">REVENUE</div><div class="revenue-card"><div class="rev-amount">₹'+t+'</div><div class="rev-label">Total Earned</div></div>';}
+    else if(tab==='settings'){c.innerHTML='<div class="sec-head">SETTINGS</div><div class="card" style="font-size:13px;color:var(--muted)">Editor Status: <b>'+editorStatus+'</b></div>';}
 }
-function showBrief(id){var o=ORDERS.find(x=>x.id===id);showModal('<div style="font-size:20px;font-weight:900;margin-bottom:12px;">AI Brief - '+id+'</div><div class="ai-result" style="display:block;"><b>Project:</b> '+o.title+'<br><b>Mood:</b> '+o.mood+'<br><b>Stock Clips:</b> Pexels drone 4K, tech closeup, urban timelapse<br><b>Music:</b> Epic Rise BPM:128, Tech Pulse BPM:140<br><b>Roadmap:</b> 0:00 Hook (3s) > Intro > Main > CTA</div><button class="btn btn-ghost" onclick="closeModal()" style="margin-top:12px;">Close</button>');}
-</script></body></html>
+
+function showBrief(id){var o=ORDERS.find(x=>x.id==='VC-00'+id);showModal('<div style="font-size:20px;font-weight:900;margin-bottom:12px;">Order Brief</div><div class="card-title">'+o.title+'</div><div class="sec-sub">'+o.type+' · '+o.plan+'</div><div style="margin-top:12px;font-size:13px;color:var(--muted)">Editor: '+o.editor+'</div><div style="margin-top:8px"><div class="progress-wrap"><div class="progress-bar" style="width:'+o.progress+'%"></div></div></div><button class="btn btn-red" style="margin-top:16px;width:100%" onclick="joinLive('+id+')">👁 Watch Live</button><button class="sm-btn sm-btn-ghost" style="margin-top:8px;width:100%" onclick="showTip()">💰 Tip Editor</button>');}
+</script>
