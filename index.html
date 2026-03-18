@@ -229,18 +229,15 @@ function demoLogin(role){
     if(role==='client'){
         document.getElementById('client-uname').textContent='TechWithRamesh';
         document.getElementById('client-screen').classList.add('active');
-        clientTab('orders',document.querySelector('#client-nav .bn-btn'));
     }
     else if(role==='editor'){
         document.getElementById('editor-uname').textContent='Vansh Kumar';
         document.getElementById('editor-screen').classList.add('active');
-        editorTab('jobs',document.querySelector('#editor-nav .bn-btn'));
     }
     else{
         document.getElementById('admin-screen').classList.add('active');
-        adminTab('orders',document.querySelector('#admin-nav .bn-btn'));
     }
-    }
+  }
 function logout(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('login-screen').classList.add('active');}
 
 function setActive(navId,btn){document.querySelectorAll('#'+navId+' .bn-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
