@@ -224,20 +224,8 @@ document.getElementById('modal').addEventListener('click',function(e){if(e.targe
 
 function loginSubmit(){var v=document.getElementById('login-inp').value.trim();if(!v){toast('Enter code or email');return;}demoLogin(v.includes('editor')?'editor':v.includes('admin')?'admin':'client');}
 
-function demoLogin(role){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    if(role==='client'){
-        document.getElementById('client-uname').textContent='TechWithRamesh';
-        document.getElementById('client-screen').classList.add('active');
-    }
-    else if(role==='editor'){
-        document.getElementById('editor-uname').textContent='Vansh Kumar';
-        document.getElementById('editor-screen').classList.add('active');
-    }
-    else{
-        document.getElementById('admin-screen').classList.add('active');
-    }
-  }
+
+    
 function logout(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('login-screen').classList.add('active');}
 
 function setActive(navId,btn){document.querySelectorAll('#'+navId+' .bn-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
@@ -257,6 +245,15 @@ function clientTab(tab,btn){setActive('client-nav',btn);var c=document.getElemen
 function joinLive(id){showModal('<div style="font-size:20px;font-weight:900;margin-bottom:12px;">Live Session</div><div style="font-size:13px;color:var(--muted2);margin-bottom:16px;">Watch your editor work in real time</div><button class="btn btn-red" onclick="window.open('https://hulklife04-cloud.github.io/vidcrew-meet/','_blank');closeModal()">Open Vidcrew Meet</button><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>');}
 function showTip(){selTipAmt=0;showModal('<div style="font-size:20px;font-weight:900;margin-bottom:8px;">Tip Your Editor</div><div style="font-size:13px;color:var(--muted2);margin-bottom:12px;">100% goes to your editor directly.</div><div class="tip-amounts" id="tip-row">'+[20,50,100,200].map(a=>'<div class="tip-opt" onclick="pickTip('+a+',this)">'+a+'</div>').join('')+'</div><input class="inp" id="tc" type="number" placeholder="Custom amount"/><button class="btn btn-gold" onclick="doTip()">Send Tip</button><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>');}
 function pickTip(a,el){selTipAmt=a;document.querySelectorAll('.tip-opt').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');}
+
+function demoLogin(role){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    if(role==='client'){document.getElementById('client-screen').classList.add('active');}
+    else if(role==='editor'){document.getElementById('editor-screen').classList.add('active');}
+    else{document.getElementById('admin-screen').classList.add('active');}
+  }
+    
+
 function doTip(){var c=document.getElementById('tc'),a=selTipAmt||(c&&parseInt(c.value))||0;if(!a){toast('Pick or enter amount');return;}closeModal();toast('Tip sent! Editor will love it!');}
 function sendMsg(){var i=document.getElementById('ci');if(!i)return;var t=i.value.trim();if(!t)return;i.value='';chatLog.push({from:'Me',text:t,time:'now',out:true});clientTab('chat',null);setTimeout(()=>{chatLog.push({from:'Vansh Kumar',text:'Got it! On it now',time:'now',out:false});clientTab('chat',null);},1500);}
 
